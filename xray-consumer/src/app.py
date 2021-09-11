@@ -16,15 +16,21 @@ def extract_trace_header(record) -> Union[TraceHeader, None]:
         return TraceHeader.from_header_str(trace_header_str)
 
 
+def segment_name(context):
+    print(context)
+    return "Handle SQS message"
+
+
 def lambda_handler(event, context):
     print(event)
+    print(context)
     for record in event["Records"]:
         trace_header = extract_trace_header(record)
         print(record)
         if trace_header:
             print(trace_header)
             segment = xray_recorder.begin_segment(
-                name=context["function_name"],
+                name=segment_name(context),
                 traceid=trace_header.root,
                 parent_id=trace_header.parent,
                 sampling=trace_header.sampled,
