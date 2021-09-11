@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "xray-producer"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-17jscamjeut1t"
+s3_prefix = "xray-producer"
+region = "ap-southeast-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "QueueUrl=\"OrderedDict([('Fn::ImportValue', 'xray-consumer-QueueUrl')])\""
+image_repositories = []

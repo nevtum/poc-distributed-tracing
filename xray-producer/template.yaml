@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: producer to experiment distributed tracing using xray
+
+# Parameters:
+#   ConsumerStack:
+#     Type: String
+#     Description: The consumer stack name which owns relevant infra
+#     Default: xray-consumer
+
+Globals:
+  Function:
+    Timeout: 3
+    Environment:
+      Variables:
+        QUEUE_URL: !ImportValue xray-consumer-QueueUrl
+
+Resources:
+  XrayProducerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: xray-producer
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Tracing: Active
+      Runtime: python3.9
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !ImportValue xray-consumer-QueueName

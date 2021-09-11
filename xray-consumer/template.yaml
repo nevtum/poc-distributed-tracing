@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: consumer to experiment distributed tracing using xray
+
+Parameters:
+  QueueName:
+    Type: String
+    Description: The name of the SQS queue for distributed tracing experimentation
+    Default: xray-queue-experiment
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  XrayConsumerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: xray-consumer
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Tracing: PassThrough
+      Runtime: python3.9
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MySqsQueue.Arn
+            BatchSize: 1
+  MySqsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref QueueName
+
+Outputs:
+  XrayQueueUrl:
+    Description: The url of the SQS queue for distributed tracing experimentation
+    Value: !Ref MySqsQueue
+    Export:
+      Name: !Sub ${AWS::StackName}-QueueUrl
+  XrayQueueName:
+    Description: The name of the SQS queue for distributed tracing experimentation
+    Value: !Ref QueueName
+    Export:
+      Name: !Sub ${AWS::StackName}-QueueName
