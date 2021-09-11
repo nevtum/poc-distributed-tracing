@@ -19,7 +19,7 @@ Resources:
       FunctionName: xray-consumer
       CodeUri: src/
       Handler: app.lambda_handler
-      Tracing: Active
+      Tracing: PassThrough
       Runtime: python3.9
       Events:
         MySQSEvent:
